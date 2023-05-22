@@ -1,13 +1,12 @@
 # viamaxidraw.py
 
 import asyncio
-from typing import Any, Dict, Optional
-from viam.components.gantry import Gantry, List
+from typing import Any, Dict, List, Optional
+from viam.components.gantry import Gantry
 from viam.proto.common import WorldState
 from viam.operations import run_with_operation
-import serial
 import json
-from axidraw import motion 
+from pyaxidraw import axidraw
 
 
 DEFAULT_USB_ADDRESS = "/dev/tty.usbmodem11201"
@@ -26,16 +25,16 @@ class AxiDraw(Gantry):
         # Starting joint positions
         self.is_stopped = True
         super().__init__(name)
-        self.ser.serial.Serial(DEFAULT_USB_ADDRESS, DEFAULT_USB_BAUD)
+        self.ad = axidraw.AxiDraw()          # Initialize class
+        self.ad.interactive()                # Enter interactive context
+        if not self.ad.connect():            # Open serial port to AxiDraw;
+            quit()                      #   Exit, if no connection.
 
     def __del__(self):
-        self.ser.close()
+        self.ad.disconnect()
 
     async def get_position(self, extra: Optional[Dict[str, Any]] = None, **kwargs) -> List[float]:
         return self.position
-
-    async def get_position(self, extra: Optional[Dict[str, Any]] = None, **kwargs) -> List[float]:
-        return self.joint_positions
 
     @run_with_operation
     async def move_to_position(
@@ -50,6 +49,12 @@ class AxiDraw(Gantry):
         self.is_stopped = False
         self.position = List[0,0]
 
+
+        if positions[2] > 0:
+            ad.moveto(positions[0], positions[1])
+        else:
+            ad.lineto(positions[0], positions[1])
+
         # Simulate the length of time it takes for the arm to move to its new position
         for x in range(10):
             await asyncio.sleep(1)
@@ -60,7 +65,6 @@ class AxiDraw(Gantry):
                 break
 
         self.is_stopped = True
-
 
 
     @run_with_operation
