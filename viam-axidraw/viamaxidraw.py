@@ -3,7 +3,6 @@
 import asyncio
 from typing import Any, Dict, List, Optional
 from viam.components.gantry import Gantry
-from viam.proto.common import WorldState
 from viam.operations import run_with_operation
 import json
 from pyaxidraw import axidraw
@@ -40,7 +39,6 @@ class AxiDraw(Gantry):
     async def move_to_position(
         self,
         positions: List[float],
-        world_state: Optional[WorldState] = None,
         extra: Optional[Dict[str, Any]] = None,
         **kwargs,
     ):
