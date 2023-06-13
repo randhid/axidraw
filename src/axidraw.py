@@ -2,7 +2,7 @@
 
 import asyncio
 
-from typing import Any, Dict, List, Optional, Sequence, Mapping
+from typing import Any, Dict, List, Optional, Sequence, Mapping, ClassVar
 from typing_extensions import Self
 
 import json
@@ -14,14 +14,13 @@ from viam.resource.types import Model, ModelFamily
 from viam.operations import run_with_operation
 from viam.module.types import Reconfigurable
 from viam.proto.common import ResourceName
+from viam.proto.base import ResourceBase
 
 
-DEFAULT_USB_ADDRESS = "/dev/tty.usbmodem11201"
-DEFAULT_USB_BAUD = 9600
 
 # Constructor
 @classmethod
-def new_axidraw(cls, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceGantry]) -> Self:
+def new_axidraw(cls, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]) -> Self:
     axidraw = cls(AxiDraw(config.name))
     axidraw.reconfigure(config, dependencies)
     return axidraw
@@ -39,9 +38,8 @@ def validate_config(cls, config: ComponentConfig) -> Sequence[str]:
 def reconfigure(self, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]):
     pass
 
-class AxiDraw(Gantry):
-    # Subclass the Viam Arm component and implement the required functions
-
+class AxiDraw(Gantry, Reconfigurable):
+    MODEL: ClassVar[Model] = Model(ModelFamily("viam", "gantry"), "axidraw")
     def __init__(self, name: str):
        
         # Starting position
@@ -77,9 +75,9 @@ class AxiDraw(Gantry):
         self.position = List[positions]
 
         if positions[2] > 0:
-            ad.moveto(positions[0], positions[1])
+            self.ad.moveto(positions[0], positions[1])
         else:
-            ad.lineto(positions[0], positions[1])
+            self.ad.lineto(positions[0], positions[1])
 
 
 
