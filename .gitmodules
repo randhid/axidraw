@@ -1,0 +1,3 @@
+[submodule "EggBot"]
+	path = EggBot
+	url = git@github.com:evil-mad/EggBot.git
