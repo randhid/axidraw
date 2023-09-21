@@ -1,8 +1,9 @@
-# viamaxidraw.py
+# my_axidraw.py
 """
 This contains the implementation of the AxiDraw class for initilization, validation,
 reconfiguration, and control and querying of state using viam's Gantry API methods.
 """
+import sys
 
 from typing import Any, Dict, List, Optional, Sequence, Mapping, ClassVar
 
@@ -38,7 +39,7 @@ class AxiDraw(Gantry, Reconfigurable):
         # Initialize class from eggbot's axidraw package
         self.axi_draw.interactive()       # Enter interactive context
         if not self.axi_draw.connect():   # Open serial port to AxiDraw;
-            quit()                  # Exit, if no connection.
+            sys.exit()                  # Exit, if no connection.
 
     def __del__(self):
         self.axi_draw.disconnect()
@@ -50,7 +51,7 @@ class AxiDraw(Gantry, Reconfigurable):
         dependencies: Mapping[ResourceName, ResourceBase]
         ):
         """
-        new_axidraw intializes the Axidraw class with the default state and
+        new_axidraw intializes the Axidraw class with the default state
 
         """
         my_axidraw = cls(config.name)
