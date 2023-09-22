@@ -28,7 +28,7 @@ class AxiDraw(Gantry, Reconfigurable):
     sets the starting positions of the plotter to 0,0,0.
     The lengths correspond to the AxiDrawV3  lengths and the servo is assumed 
     """
-    MODEL: ClassVar[Model] = Model(ModelFamily("viam", "eggbot"), "axidraw")
+    MODEL: ClassVar[Model] = Model(ModelFamily("peter", "eggbot"), "axidraw")
     def __init__(self, name: str):
         super().__init__(name)
         # Starting State
