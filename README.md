@@ -1,13 +1,13 @@
 # axidraw
 
-This module interfaces with an Evil Mad Scientist Eggbot Axidraw plotter. It implements the machine as a mosular Viam Gantry.
+This module interfaces with an Evil Mad Scientist Eggbot Axidraw plotter. It implements the machine as a modular Viam Gantry.
 
 
 
 ## Connecting
 
 This module communicated to the gantry using a USB serial connection. The axidraw python API is imported to communicate with the device. 
-Connect the eggbot stepper driver through a USB cable to any computer or board (such as the rasberry pi) running a viam server and configure the module to control it.
+Connect the eggbot stepper driver through a USB cable to any computer or board (such as the raspberry pi) running a viam server and configure the module to control it.
 
 
 ## Configuration
