@@ -6,8 +6,9 @@ This module interfaces with an Evil Mad Scientist Eggbot Axidraw plotter. It imp
 
 ## Connecting
 
-This module communicated to the ganry using a USB serial connection, the axidraw python api is imported to communicate with the device. 
-Connect the eggbot stepper driver to a 
+This module communicated to the gantry using a USB serial connection. The axidraw python API is imported to communicate with the device. 
+Connect the eggbot stepper driver through a USB cable to any computer or board (such as the rasberry pi) running a viam server and configure the module to control it.
+
 
 ## Configuration
 
