@@ -21,7 +21,7 @@ from viam.logging import getLogger
 
 LOGGER = getLogger(__name__)
 
-
+MM_TO_INCHES = 0.0393 #TODO check the resolution of this gantry
 class AxiDraw(Gantry, Reconfigurable):
     """
     An AxiDraw Gantry component that connects to the controller via a usb connection and
@@ -89,11 +89,22 @@ class AxiDraw(Gantry, Reconfigurable):
         self.is_stopped = False
         self.position = positions
 
-        if positions[2] > 0: # zero is the ground plane for the third axis - the servo
-            self.axi_draw.moveto(positions[0], positions[1]) # Move with pen up
-        else:
-            self.axi_draw.lineto(positions[0], positions[1]) # Move with pen down
+        positions_inches = positions*MM_TO_INCHES
 
+        if positions[2] > 0: # zero is the ground plane for the third axis - the servo
+            #TODO: servo up/down through their position or an extra parameter as a bool
+            # ask for user preference.
+            self.axi_draw.moveto(
+                # Move with pen up
+                positions_inches[0], 
+                positions_inches[1]) 
+        else:
+             # Move with pen down
+            self.axi_draw.lineto(
+                positions_inches[0], 
+            positions_inches[1])
+
+        self.is_stopped = True
         # Check if the operation is cancelled and, if it is, stop the gantry's motion
         if await operation.is_cancelled():
             await self.stop()

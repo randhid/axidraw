@@ -9,7 +9,7 @@ from viam.resource.registry import Registry, ResourceCreatorRegistration
 from viam.components.gantry import Gantry
 from viam.module.module import Module
 
-from my_axidraw import AxiDraw
+from .my_axidraw import AxiDraw
 
 async def main():
     """This function creates and starts a new module, after adding all desired resources.
