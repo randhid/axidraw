@@ -19,7 +19,7 @@ This module contains one modular resource the `peter:eggbot:gantry`. And can be 
 can be selected to your liking.
 
 
-### `viam:eggbot:axidarw`
+### `viam:eggbot:axidraw`
 ```json
 {
   "modules": [
