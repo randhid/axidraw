@@ -6,7 +6,7 @@
   "models": [
     {
       "api": "rdk:component:gantry",
-      "model": "peter:eggbar:axidraw"
+      "model": "peter:eggbot:axidraw"
     }
   ],
   "build": {
