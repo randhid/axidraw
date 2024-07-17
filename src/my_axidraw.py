@@ -6,6 +6,7 @@ reconfiguration, and control and querying of state using viam's Gantry API metho
 import sys
 
 from typing import Any, Dict, List, Optional, Sequence, Mapping, ClassVar
+from typing_extensions import Self
 
 from pyaxidraw import axidraw
 
@@ -28,12 +29,11 @@ class AxiDraw(Gantry, Reconfigurable):
     sets the starting positions of the plotter to 0,0,0.
     The lengths correspond to the AxiDrawV3  lengths and the servo is assumed 
     """
-    MODEL: ClassVar[Model] = Model(ModelFamily("peter", "eggbot"), "axidraw")
     def __init__(self, name: str):
         super().__init__(name)
         # Starting State
         self.lengths = [430.0 ,291.0,17.0]
-        self.position = [0.0 ,0.0,0.0]
+        self.position = [0.0,0.0,0.0]
         self.is_stopped = True
         self.axi_draw = axidraw.AxiDraw()
         # Initialize class from eggbot's axidraw package
@@ -44,12 +44,14 @@ class AxiDraw(Gantry, Reconfigurable):
     def __del__(self):
         self.axi_draw.disconnect()
 
+    MODEL: ClassVar[Model] = Model(ModelFamily("peter", "eggbot"), "axidraw")
+
     # Constructor
     @classmethod
-    def new_axidraw(
+    def new(
         cls, config: ComponentConfig,
         dependencies: Mapping[ResourceName, ResourceBase]
-        ):
+        ) -> Self:
         """
         new_axidraw intializes the Axidraw class with the default state
 
@@ -60,7 +62,7 @@ class AxiDraw(Gantry, Reconfigurable):
 
     # Validates JSON Configuration
     @classmethod
-    def validate_config(cls, config: ComponentConfig) -> Sequence[str]:
+    def validate(cls, config: ComponentConfig):
         """ does nothing, there are no attributes to change in this model """
 
 
@@ -72,7 +74,8 @@ class AxiDraw(Gantry, Reconfigurable):
         ):
         """ reconfigure does nothing, there are no attributes to change in this model"""
 
-    async def get_position(self, extra: Optional[Dict[str, Any]] = None, **kwargs) -> List[float]:
+    @run_with_operation
+    async def get_position(self, *, extra: Optional[Dict[str, Any]] = None, timeout: Optional[float] = None, **kwargs) -> List[float]:
         """ gets the current position of the axidraw  """
         return self.position
 
@@ -81,7 +84,9 @@ class AxiDraw(Gantry, Reconfigurable):
         self,
         positions: List[float],
         speeds: List[float],
+        *,
         extra: Optional[Dict[str, Any]] = None,
+        timeout: Optional[float] = None,
         **kwargs,
     ):
         """ moves the axidraw axes and servo to draw  """
@@ -89,7 +94,7 @@ class AxiDraw(Gantry, Reconfigurable):
         self.is_stopped = False
         self.position = positions
 
-        positions_inches = positions*MM_TO_INCHES
+        positions_inches = [i * MM_TO_INCHES for i in positions]
 
         if positions[2] > 0: # zero is the ground plane for the third axis - the servo
             #TODO: servo up/down through their position or an extra parameter as a bool
@@ -110,29 +115,20 @@ class AxiDraw(Gantry, Reconfigurable):
             await self.stop()
 
 
-    async def get_lengths(self, extra: Optional[Dict[str, Any]] = None, **kwargs) -> List[float]:
+    async def get_lengths(self, *, extra: Optional[Dict[str, Any]] = None, timeout: Optional[float] = None, **kwargs) -> List[float]:
         """ returns the lengths of the axidraw axes """
         return self.lengths
 
 
-    async def stop(self, extra: Optional[Dict[str, Any]] = None, **kwargs):
+    async def stop(self, *, extra: Optional[Dict[str, Any]] = None, timeout: Optional[float] = None, **kwargs):
         """ stops the axidraw """
         self.is_stopped = True
 
-    async def home(self, extra: Optional[Dict[str, Any]] = None, **kwargs):
+    async def home(self, *, extra: Optional[Dict[str, Any]] = None, timeout: Optional[float] = None, **kwargs) -> bool:
         """ sets the current position to 0,0,0 """
-        self.position = [0,0,0]
-
+        await self.move_to_position([0, 0, 0], [50.0, 50.0, 50.0])
+        return True
+    
     async def is_moving(self) -> bool:
         """ queries whether the axidraw is moving """
         return not self.is_stopped
-
-    async def get_geometries(
-        self,
-        extra: Optional[Dict[str, Any]] = None,
-        **kwargs) -> List[Geometry]:
-        """ returns nothing - no geometries associated with axidraw """
-
-    async def close(self):
-        """ disconnects the axidraw """
-        self.axi_draw.disconnect()

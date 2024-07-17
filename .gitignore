@@ -320,3 +320,7 @@ cython_debug/
 
 # VSCode
 .vscode
+
+# viam-env/
+viam-env/
+.installed
